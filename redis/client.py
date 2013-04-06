@@ -426,6 +426,8 @@ class StrictRedis(object):
 
     def delete(self, *names):
         "Delete one or more keys specified by ``names``"
+        if not names:
+            return None
         return self.execute_command('DEL', *names)
     __delitem__ = delete
 
@@ -532,6 +534,11 @@ class StrictRedis(object):
         Perform a bitwise operation using ``operation`` between ``keys`` and
         store the result in ``dest``.
         """
+        operation = operation.lower()
+        if operation not in ['and', 'or', 'xor', 'not']:
+            raise ValueError("invalid operation %r" % operation)
+        if not keys:
+            return 0
         return self.execute_command('BITOP', operation, dest, *keys)
 
     def decr(self, name, amount=1):
@@ -614,6 +621,8 @@ class StrictRedis(object):
         Returns a list of values ordered identically to ``keys``
         """
         args = list_or_args(keys, args)
+        if not args:
+            return []
         return self.execute_command('MGET', *args)
 
     def mset(self, mapping):
@@ -836,6 +845,8 @@ class StrictRedis(object):
 
     def lpush(self, name, *values):
         "Push ``values`` onto the head of the list ``name``"
+        if not values:
+            return self.llen(name)
         return self.execute_command('LPUSH', name, *values)
 
     def lpushx(self, name, value):
@@ -891,6 +902,8 @@ class StrictRedis(object):
 
     def rpush(self, name, *values):
         "Push ``values`` onto the tail of the list ``name``"
+        if not values:
+            return self.llen(name)
         return self.execute_command('RPUSH', name, *values)
 
     def rpushx(self, name, value):
@@ -954,6 +967,8 @@ class StrictRedis(object):
     #### SET COMMANDS ####
     def sadd(self, name, *values):
         "Add ``value(s)`` to set ``name``"
+        if not values:
+            return 0
         return self.execute_command('SADD', name, *values)
 
     def scard(self, name):
@@ -1015,6 +1030,8 @@ class StrictRedis(object):
 
     def srem(self, name, *values):
         "Remove ``values`` from set ``name``"
+        if not values:
+            return 0
         return self.execute_command('SREM', name, *values)
 
     def sunion(self, keys, *args):
@@ -1051,6 +1068,8 @@ class StrictRedis(object):
         for pair in iteritems(kwargs):
             pieces.append(pair[1])
             pieces.append(pair[0])
+        if not pieces:
+            return 0
         return self.execute_command('ZADD', name, *pieces)
 
     def zcard(self, name):
@@ -1233,6 +1252,8 @@ class StrictRedis(object):
     #### HASH COMMANDS ####
     def hdel(self, name, *keys):
         "Delete ``keys`` from hash ``name``"
+        if not keys:
+            return 0
         return self.execute_command('HDEL', name, *keys)
 
     def hexists(self, name, key):
