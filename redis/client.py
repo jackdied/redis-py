@@ -1081,7 +1081,7 @@ class StrictRedis(object):
 
     def zincrby(self, name, value, amount=1):
         "Increment the score of ``value`` in sorted set ``name`` by ``amount``"
-        return self.execute_command('ZINCRBY', name, amount, value)
+        return self.execute_command('ZINCRBY', name, float(amount), value)
 
     def zinterstore(self, dest, keys, aggregate=None):
         """
